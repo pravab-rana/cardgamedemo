@@ -5,6 +5,6 @@ import java.util.ArrayList;
 public interface CardCollisionStrategy 
 {
 	
-	Player pickWinner(ArrayList<Player> currentPlayers,ArrayList<CardRound>currentRound);
+	Player pickWinner(ArrayList<Player> currentPlayers,CardArrayList<Card>currentRoundCards);
 
 }
