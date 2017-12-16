@@ -28,11 +28,12 @@ public class Player {
 		this.name = name;
 	}
 	
-	public void getPlayingCard(Card card) throws CardException
+	public void getPlayingCard(Card card) //throws CardException
 	{
 		if(card == null)
 		{
-			throw new CardException("Cannot get a null playing card");
+			//throw new CardException("Cannot get a null playing card");
+			throw new RuntimeException("Cannot get a null playing card");
 		}
 		cards.add(card);
 	}
