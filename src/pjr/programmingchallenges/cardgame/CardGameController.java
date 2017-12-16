@@ -95,14 +95,18 @@ public class CardGameController
 			cardAndPlayers.add(cardAndPlayer);
 			//roundCards.add(playerIterator.next().showTopCard());
 		}
+		System.out.println("Round Details:");
 		printRoundDetails(cardAndPlayers);
 		
 		CardAndPlayer winner = pickRoundWinner(cardAndPlayers);
+		System.out.println("Round Winner");
+		System.out.println(winner.toString());
 		Player winningPlayer = winner.getPlayer();
 		//add cards to the winner
 		Player winnerP = getPlayer(winningPlayer);
 		
 		addCardsToWinner(winningPlayer,cardAndPlayers);
+		//removeCardsFromLosers()
 		
 	}
 	
@@ -112,9 +116,13 @@ public class CardGameController
 		for(CardAndPlayer cardAndPlayer:cardAndPlayers)
 		{
 			currentPlayer = cardAndPlayer.getPlayer();
-			if(currentPlayer.equals(winningPlayer))
-				continue;
+			
+			/*Need to remove winners card as well
+			 if(currentPlayer.equals(winningPlayer))
+			 	continue;
+			*/
 			winningPlayer.getPlayingCard(cardAndPlayer.getCard());
+			currentPlayer.removeCard(cardAndPlayer.getCard());
 		}
 	}
 
