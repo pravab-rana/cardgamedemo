@@ -2,10 +2,16 @@ package pjr.programmingchallenges.cardgame;
 
 import java.util.Collections;
 
+
 public class CardDeck 
 {
+	//I started out with an array but then just felt that if I could restrict 
+	//the size to 52,could leverage ArrayList hence extended ArrayList
+	//overriding just the add method
 	
-	Card cards[] = new Card[52];
+	//Card cards[] = new Card[52];
+	CardArrayList<Card> cards = new CardArrayList<Card>();
+	
 	int suffleCount;
 	
 	CardDeck()
@@ -16,13 +22,15 @@ public class CardDeck
 
 	private void initializeCardDeck() 
 	{
-		int i = 0;
+		//int i = 0;
 		for (CardSuit suit : CardSuit.values()) 
 		{
 		    for (CardRank rank : CardRank.values()) 
 		    {
-		      cards[i]= new Card(suit,rank);
-		      i++;  
+		      //cards[i]= new Card(suit,rank);
+		      cards.add(new Card(suit,rank));
+				 	
+		      //i++;  
 		    }
 		  }
 	}
@@ -56,20 +64,38 @@ public class CardDeck
 		if(moveIndex==50)
 			moveIndex--;
 		
+		/*
 		Card tempCard = cards[moveIndex];
 		cards[moveIndex] = cards[moveIndex+2];
 		cards[moveIndex+2] = tempCard;
+		*/
+		
+		Card tempCard = cards.get(moveIndex);
+		cards.set(moveIndex, cards.get(moveIndex+2));
+		cards.set(moveIndex+2, tempCard);
 	}
 	
+	public Card getTopCard()
+	{
+		Card topCard = cards.get(0);
+		cards.remove(0);
+		return (topCard);
+	}
 	
 	@Override
 	public String toString()
 	{
 		String currentCards = "";
+		/*
 		for(int i=0;i<cards.length;i++)
 		{
 			currentCards=currentCards+" CardSuit:"+cards[i].getCardSuit()+" CardRank:"+cards[i].getCardRank();
+		}*/
+		for(int i=0;i<cards.size();i++)
+		{
+			currentCards = currentCards+" CardSuit:"+cards.get(i).getCardSuit()+" CardRank:"+cards.get(i).getCardRank();
 		}
+
 		
 		return(currentCards);
 	}
