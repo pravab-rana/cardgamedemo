@@ -13,7 +13,7 @@ public class Player
 		cards = new ArrayList<Card>();
 	}
 	
-	Player(String name)
+	public Player(String name)
 	{
 		this.name = name;
 		cards = new ArrayList<Card>();
@@ -48,13 +48,34 @@ public class Player
 	 * Method to add playing cards to player's deck
 	 * @param card
 	 */
-	public void addRoundCards(ArrayList<Card> roundCards) //throws CardException
+	public void addFromRoundCards(ArrayList<Card> roundCards) //throws CardException
 	{
 		if(cards == null)
 		{
 			throw new RuntimeException("Cannot add null playing card");
 		}
 		cards.addAll(roundCards);
+	}
+	
+	/**
+	 * Method to add player's deck cards to the round
+	 * @param int number of cards to put to the round
+	 */
+	public CardArrayList<Card> addToRoundCards(int cardToAddToRound) 
+	{
+		if(cardToAddToRound<=0)
+		{
+			throw new RuntimeException("Need a positive number as the number of cards to add to the round");
+		}
+		CardArrayList<Card> roundCards = new CardArrayList<Card>();
+		Card currentCard = null;
+		for(int i=0;i<cardToAddToRound;i++)
+		{
+			currentCard = cards.get(0);
+			roundCards.add(currentCard);
+			removeCard(currentCard);
+		}
+		return(roundCards);
 	}
 	
 	/**
@@ -66,32 +87,31 @@ public class Player
 	}
 	
 	/**
-	 * Method to show the top card
+	 * Method to retrieve the top card, removes the card from player's deck
 	 * @return
 	 */
-	public Card showTopCard()
+	public Card getTopCard()
 	{
 		Card topCard = cards.get(0);
 		removeCard(topCard);
 		return(topCard);
 	}
 	
-	public void collectRoundWinnerCards(Card roundCards[])
+	public int getCurrentCardCount()
 	{
-		for(Card card:roundCards)
-		{
-			cards.add(card);
-		}
+		return(cards.size());
 	}
-	
+		
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj == this) {
+		if (obj == this) 
+		{
             return true;
         }
  
-        if (!(obj instanceof Player)) {
+        if (!(obj instanceof Player)) 
+        {
             return false;
         }
 		
@@ -100,6 +120,12 @@ public class Player
         	return true;
         
         return false;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return(this.getName().hashCode()+this.cards.hashCode());
 	}
 	
 	@Override
