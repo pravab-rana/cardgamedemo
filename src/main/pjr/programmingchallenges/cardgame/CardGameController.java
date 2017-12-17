@@ -7,6 +7,7 @@ public class CardGameController
 {
 	ArrayList<Player> players;
 	CardDeck cardDeck;
+	CardCollisionStrategy cardCollisionStrategy;
 	
 	CardGameController()
 	{
@@ -14,7 +15,26 @@ public class CardGameController
 		cardDeck = new CardDeck();
 	}
 	
-	public int playerCount()
+	CardGameController(CardCollisionStrategy cardCollisionStrategy)
+	{
+		players = new ArrayList<Player>();
+		cardDeck = new CardDeck();
+		this.cardCollisionStrategy = cardCollisionStrategy;
+	}
+	
+	
+	
+	public void setCardCollisionStrategy(CardCollisionStrategy cardCollisionStrategy) 
+	{
+		this.cardCollisionStrategy = cardCollisionStrategy;
+	}
+	
+	public CardCollisionStrategy getCardCollisionStrategy()
+	{
+		return(cardCollisionStrategy);
+	}
+
+	public int getPlayerCount()
 	{
 		return(players.size());
 	}
@@ -53,6 +73,11 @@ public class CardGameController
 		return(desiredPlayer);
 	}
 	
+	
+	/**
+	 * Method to initially distribute the deck among the players in the current game
+	 * @return true able to distribute, false otherwise
+	 */
 	public boolean distributeDeck()  
 	{
 		boolean isDeckDistributed=false;
@@ -60,7 +85,7 @@ public class CardGameController
 		{
 			throw new RuntimeException("No active player found");
 		}
-		//we have different card distribution strategies
+		//we can have different card distribution strategies
 		while(cardDeck.cards.size()>0)
 		{
 			Iterator<Player> playerIterator = players.iterator();
@@ -82,6 +107,7 @@ public class CardGameController
 	}
 	
 	//public Player playRound()
+	/*
 	public void playRound()
 	{
 		//ArrayList<Card> roundCards = new ArrayList<Card>();
@@ -91,6 +117,12 @@ public class CardGameController
 		while(playerIterator.hasNext())
 		{
 			currentPlayer = playerIterator.next();
+			//does the current player has cards
+			if(currentPlayer.currentCardCount()<=0)
+			{
+				playerIterator.remove();
+				continue;
+			}
 			CardRound cardAndPlayer = new CardRound(currentPlayer,currentPlayer.showTopCard());
 			cardAndPlayers.add(cardAndPlayer);
 			//roundCards.add(playerIterator.next().showTopCard());
@@ -109,7 +141,53 @@ public class CardGameController
 		//removeCardsFromLosers()
 		
 	}
+	*/
 	
+	public void playRound()
+	{
+		//ArrayList<Card> roundCards = new ArrayList<Card>();
+		
+		if(cardCollisionStrategy==null)
+			throw new RuntimeException("A Card Collision Strategy must be set before playing");
+		
+		//ArrayList<CardRound> cardAndPlayers = new ArrayList<CardRound>();
+		Iterator<Player> playerIterator = players.iterator();
+		Player currentPlayer = null;
+		while(playerIterator.hasNext())
+		{
+			currentPlayer = playerIterator.next();
+			//does the current player has cards
+			if(currentPlayer.currentCardCount()<=0)
+			{
+				playerIterator.remove();
+				continue;
+			}
+			
+			//CardRound cardAndPlayer = new CardRound(currentPlayer,currentPlayer.showTopCard());
+			//cardAndPlayers.add(cardAndPlayer);
+			
+			
+			//roundCards.add(playerIterator.next().showTopCard());
+		}
+		System.out.println("Current Round Players Details:");
+		//printRoundDetails(cardAndPlayers);
+		printRoundPlayers(players);
+		
+		Player winner = pickRoundWinner(players);
+		//CardRound winner = pickRoundWinner(cardAndPlayers);
+		System.out.println("Round Winner");
+		System.out.println(winner.toString());
+		
+		//Player winningPlayer = winner.getPlayer();
+		//add cards to the winner
+		//Player winnerP = getPlayer(winningPlayer);
+		
+		//addCardsToWinner(winningPlayer,cardAndPlayers);
+		//removeCardsFromLosers()
+		
+	}
+	
+	/*
 	private void addCardsToWinner(Player winningPlayer, ArrayList<CardRound> cardAndPlayers) 
 	{
 		Player currentPlayer = null;
@@ -117,22 +195,23 @@ public class CardGameController
 		{
 			currentPlayer = cardAndPlayer.getPlayer();
 			
-			/*Need to remove winners card as well
-			 if(currentPlayer.equals(winningPlayer))
-			 	continue;
-			*/
+			//Need to remove winners card as well
+			// if(currentPlayer.equals(winningPlayer))
+			// 	continue;
+			//
 			
 			//winningPlayer.getPlayingCard(cardAndPlayer.getCard());
 			
 			//There might be more than one more due to collision
 			//winningPlayer.addRoundCards(cardAndPlayer.getCard());
-			winningPlayer.addRoundCards(cardAndPlayer.getCards());
+			winningPlayer.addFromRoundCards(cardAndPlayer.getCards());
 			
-			/*removing card should happen automatically on the show of top card
-			  currentPlayer.removeCard(cardAndPlayer.getCard());
-			*/
+			  //removing card should happen automatically on the show of top card
+			  //currentPlayer.removeCard(cardAndPlayer.getCard());
+			
 		}
 	}
+	*/
 
 	private void printRoundDetails(ArrayList<CardRound> cardAndPlayers)
 	{
@@ -144,7 +223,17 @@ public class CardGameController
 		System.out.println(roundDetails);
 	}
 	
-	//public int pickRoundWinner(ArrayList<Card> roundCards)
+	private void printRoundPlayers(ArrayList<Player> players)
+	{
+		String roundPlayer = "\n";
+		for(Player player:players)
+		{
+			roundPlayer = roundPlayer + player.toString();
+		}
+		System.out.println(roundPlayer);
+	}
+	
+	/*
 	public CardRound pickRoundWinner(ArrayList<CardRound> cardAndPlayers)
 	{
 		int winningCard = -1;
@@ -181,6 +270,62 @@ public class CardGameController
 		//where there would be need to get 3 further cards
 		//return -1;
 		
+	}
+	*/
+	
+	public Player pickRoundWinner(ArrayList<Player> players)
+	{
+		boolean hasCollision = false;
+		CardArrayList<Card> roundCards = new CardArrayList<Card>();
+		ArrayList<Player>collisionPlayers=null;
+		Player winner = players.get(0);
+		
+		Card currentWinningCard = null;
+		Card cardToCompare = null;
+	
+		for(int i=1;i<players.size();i++)
+		{
+			
+			if(currentWinningCard ==null)
+			{
+				currentWinningCard = winner.getTopCard();
+				roundCards.add(currentWinningCard);
+			}
+			
+			cardToCompare = players.get(i).getTopCard();
+			roundCards.add(cardToCompare);
+			
+			if(currentWinningCard.compareCard(cardToCompare)==-1)
+			{
+				winner = players.get(i);
+			}
+		
+			else if(currentWinningCard.compareCard(cardToCompare)==0)
+			{
+				hasCollision = true;
+				System.out.println("Collision");
+				if(collisionPlayers == null)
+				{
+					collisionPlayers = new ArrayList<Player>();
+					collisionPlayers.add(players.get(i));
+					if(!collisionPlayers.contains(winner))
+					{
+						collisionPlayers.add(winner);
+					}
+				}
+			}
+		}
+		
+		if(hasCollision)
+		{
+			winner = cardCollisionStrategy.pickWinner(collisionPlayers, roundCards);
+		}
+		
+		else
+		{
+			winner.addFromRoundCards(roundCards);
+		}
+		return(winner);
 	}
 
 }
