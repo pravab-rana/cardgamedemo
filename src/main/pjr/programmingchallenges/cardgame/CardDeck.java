@@ -2,17 +2,12 @@ package pjr.programmingchallenges.cardgame;
 
 import java.util.Collections;
 
-
 public class CardDeck 
 {
-	//I started out with an array but then just felt that if I could restrict 
-	//the size to 52,could leverage ArrayList hence extended ArrayList
-	//overriding just the add method
-	
 	//Card cards[] = new Card[52];
 	CardArrayList<Card> cards = new CardArrayList<Card>();
-	
 	int suffleCount;
+	boolean collectionShuffle;
 	
 	public CardDeck()
 	{
@@ -20,17 +15,33 @@ public class CardDeck
 		suffleCount = 10;//setting a default shuffleCount;
 	}
 
+	public CardArrayList<Card> getCards() 
+	{
+		return cards;
+	}
+
+	public int getSuffleCount() 
+	{
+		return suffleCount;
+	}
+	
+	public boolean getCollectionShuffle()
+	{
+		return(collectionShuffle);
+	}
+	
+	public void setCollectionShuffle(boolean collectionShuffle)
+	{
+		this.collectionShuffle = collectionShuffle;
+	}
+
 	private void initializeCardDeck() 
 	{
-		//int i = 0;
 		for (CardSuit suit : CardSuit.values()) 
 		{
 		    for (CardRank rank : CardRank.values()) 
 		    {
-		      //cards[i]= new Card(suit,rank);
 		      cards.add(new Card(suit,rank));
-				 	
-		      //i++;  
 		    }
 		  }
 	}
@@ -45,15 +56,26 @@ public class CardDeck
 		return(suffleCount);
 	}
 	
+	/**
+	 * Custom method to shuffle the cards. This method uses Math.random() to generate random indexes
+	 * to swap within the collection.
+	 * The class does provide an option to use the default Collection's shuffle by setting
+	 * collectionShuffle as true
+	 */
 	public void shuffleDeck()
 	{
-		int moveIndex = -1;
-		for(int move=0;move<suffleCount;move++)
+		if(!collectionShuffle)
 		{
-			moveIndex = (int) (Math.random()*51);
-			//System.out.println("Move index:"+moveIndex);
-			swapCards(moveIndex);
+			int moveIndex = -1;
+			for(int move=0;move<suffleCount;move++)
+			{
+				moveIndex = (int) (Math.random()*51);
+				//System.out.println("Move index:"+moveIndex);
+				swapCards(moveIndex);
+			}
 		}
+		else
+			Collections.shuffle(cards);
 	}
 	
 	private void swapCards(int moveIndex)
@@ -75,7 +97,11 @@ public class CardDeck
 		cards.set(moveIndex+2, tempCard);
 	}
 	
-	public Card getTopCard()
+	/**
+	 * Method to return the top card from the card deck
+	 * @return Card - top card
+	 */
+	public Card getTopDeckCard()
 	{
 		Card topCard = cards.get(0);
 		cards.remove(0);
@@ -86,6 +112,25 @@ public class CardDeck
 	{
 		return(cards.size());
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(obj==this)
+			return true;
+		
+		if(!(obj instanceof CardDeck))
+			return false;
+		
+        CardDeck carddeck = (CardDeck)obj;
+        CardArrayList<Card> carddeckcards = carddeck.getCards();
+        for(int i=0;i<carddeckcards.size();i++)
+        {
+        	if(!(this.cards.get(i)).equals(carddeckcards.get(i)))
+        		return false;
+        }
+        return true;
+  	}
 	
 	@Override
 	public String toString()
@@ -100,8 +145,6 @@ public class CardDeck
 		{
 			currentCards = currentCards+" CardSuit:"+cards.get(i).getCardSuit()+" CardRank:"+cards.get(i).getCardRank();
 		}
-
-		
 		return(currentCards);
 	}
 }

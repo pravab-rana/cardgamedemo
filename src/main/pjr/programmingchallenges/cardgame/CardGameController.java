@@ -95,7 +95,7 @@ public class CardGameController
 				//to each player as well
 				if(cardDeck.cards.size()==0)
 					break;
-				player.getPlayingCard(cardDeck.getTopCard());
+				player.getPlayingCard(cardDeck.getTopDeckCard());
 			}
 		}
 		isDeckDistributed=true;
@@ -145,30 +145,22 @@ public class CardGameController
 	
 	public void playRound()
 	{
-		//ArrayList<Card> roundCards = new ArrayList<Card>();
-		
 		if(cardCollisionStrategy==null)
 			throw new RuntimeException("A Card Collision Strategy must be set before playing");
 		
-		//ArrayList<CardRound> cardAndPlayers = new ArrayList<CardRound>();
 		Iterator<Player> playerIterator = players.iterator();
 		Player currentPlayer = null;
 		while(playerIterator.hasNext())
 		{
 			currentPlayer = playerIterator.next();
 			//does the current player has cards
-			if(currentPlayer.currentCardCount()<=0)
+			if(currentPlayer.getCurrentCardCount()<=0)
 			{
 				playerIterator.remove();
 				continue;
-			}
-			
-			//CardRound cardAndPlayer = new CardRound(currentPlayer,currentPlayer.showTopCard());
-			//cardAndPlayers.add(cardAndPlayer);
-			
-			
-			//roundCards.add(playerIterator.next().showTopCard());
+			}		
 		}
+		
 		System.out.println("Current Round Players Details:");
 		//printRoundDetails(cardAndPlayers);
 		printRoundPlayers(players);
@@ -213,15 +205,7 @@ public class CardGameController
 	}
 	*/
 
-	private void printRoundDetails(ArrayList<CardRound> cardAndPlayers)
-	{
-		String roundDetails = "\n";
-		for(CardRound cardAndPlayer:cardAndPlayers)
-		{
-			roundDetails = roundDetails + cardAndPlayer.toString();
-		}
-		System.out.println(roundDetails);
-	}
+	
 	
 	private void printRoundPlayers(ArrayList<Player> players)
 	{
